@@ -19,5 +19,5 @@ def registration_view(request):
         data['email'] = account.email
         data['username'] = account.username
     else:
-        data = serializer.errors
+        return Response(serializer.errors, status=400)
     return Response(data)

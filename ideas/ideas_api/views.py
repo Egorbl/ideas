@@ -1,5 +1,4 @@
-from turtle import pu
-from django.shortcuts import render
+from operator import not_
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -17,64 +16,90 @@ from .permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 from .pagination import IdeaPagination, CommentPagination, TagPagination
 
 
-class IdeaAPIView(APIView):
+class ErrorsMixin:
+    validation_error = {"detail": "Validation error"}
+    not_found_error = {"detail": "Item not found"}
+
+
+class SerializerMixin:
+
+    def get_serializer(self, *args, **kwargs):
+        serializer_class = self.get_serializer_class()
+        kwargs.setdefault('context', self.get_serializer_context())
+
+        return serializer_class(*args, **kwargs)
+
+    def get_serializer_class(self):
+        return self.serializer_class
+
+    def get_serializer_context(self):
+        return {
+            'request': self.request,
+            'views': self,
+        }
+
+
+class IdeaAPIView(APIView, ErrorsMixin, SerializerMixin):
 
     model = Idea
     serializer_class = IdeaSerializer
-    validation_error = {"error": "Validation error"}
-    not_found_error = {"error": "Item not found"}
     permission_classes = (IsAuthenticatedOrReadOnly,)
     pagination_class = IdeaPagination
 
-    def filter_queryset(self, **filters):
+    # tag, only_me, category, only_actual, new_or_popular
+    def filter_queryset(self, user=None, **filters):
         queryset = self.model.objects.all()
 
         tag = filters.get("tag")
         if tag is not None:
-            queryset = queryset.filter(tags__name=tag)
+            queryset = queryset.filter(tags__name=tag[0])
 
         only_my = filters.get("only_me")
-        if only_my is not None:
-            queryset = queryset.filter()
+        if only_my is not None and user.is_authenticated:
+            queryset = queryset.filter(owner=user)
 
         category = filters.get('category')
         if category is not None:
-            queryset = queryset.filter(category=category)
+            queryset = queryset.filter(category=category[0])
 
-        only_actual = filters.get("only_actual", True)
-        if only_actual is True:
+        only_actual = filters.get("only_actual", 'true')
+        if only_actual[0] == 'true':
             queryset = queryset.filter(is_actual=True)
 
-        new_or_popular = filters.get("new_or_popular", 'new')
-        if new_or_popular == 'new':
-            queryset = queryset.order_by('date_added')
-        elif new_or_popular == 'popular':
-            queryset = queryset.order_by('likes')
+        sort_by = filters.get("sort_by", 'date')
+        if sort_by[0] == 'likes':
+            queryset = queryset.order_by('-likes')
+        else:
+            queryset = queryset.order_by('-date_added')
 
         return queryset
 
     # tag: None, only_my: None, category: None, new_or_popular: 'new', only_actual: True
     def get(self, request):
         filters = request.query_params
-        result_queryset = self.filter_queryset(**filters)
-        serializer = self.serializer_class(result_queryset, many=True, context={
-            'request': request
-        })
+        user = request.user
+        result_queryset = self.filter_queryset(user, **filters)
+
+        paginator = self.pagination_class()
+        paginated_queryset = paginator.paginate_queryset(
+            result_queryset, request)
+
+        serializer = self.get_serializer(paginated_queryset, many=True)
         serializer_data = serializer.data
-        return Response(serializer_data)
+
+        return paginator.get_paginated_response(serializer_data)
 
     def post(self, request):
         idea = request.data
-        tags_id = idea.pop("tags", [])
+        tags_id = idea.pop('tags', [])
         tags = self.get_tags(tags_id)
 
         if isinstance(tags, Response):
             return tags
 
-        serializer = self.serializer_class(data=idea, context={
-            'request': request
-        })
+        serializer = self.get_serializer(data=idea)
         if not serializer.is_valid():
+            self.validation_error['fields'] = serializer.errors
             return Response(self.validation_error, status=400)
         serializer.save(owner=request.user, tags=tags)
         return Response(serializer.data)
@@ -84,32 +109,31 @@ class IdeaAPIView(APIView):
         for tag_id in tags_id:
             tag = Tag.objects.filter(id=tag_id).first()
             if not tag:
-                return Response(self.validation_error)
+                return Response(self.validation_error, status=400)
             tags.append(tag)
         return tags
 
 
-class TagAPIView(APIView):
+class TagAPIView(APIView, ErrorsMixin, SerializerMixin):
 
     model = Tag
     serializer_class = TagSerializer
-    validation_error = {"error": "Validation error"}
-    not_found_error = {"error": "Item not found"}
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = TagPagination
 
     def get(self, request):
         queryset = self.model.objects.all()
-        serializer = self.serializer_class(queryset, many=True,  context={
-            'request': request
-        })
-        return Response(serializer.data)
+
+        paginator = self.pagination_class()
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+
+        serializer = self.get_serializer(paginated_queryset, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
+
         tag = request.data
-        serializer = self.serializer_class(data=tag,  context={
-            'request': request
-        })
+        serializer = self.get_serializer(data=tag)
         if not serializer.is_valid():
             return Response(self.validation_error, status=400)
 
@@ -117,12 +141,17 @@ class TagAPIView(APIView):
         return Response(serializer.data)
 
 
-class IdeaDetailAPIView(APIView):
+class IdeaDetailAPIView(APIView, ErrorsMixin, SerializerMixin):
     model_queryset = Idea.objects.all()
     serializer_class = IdeaSerializer
-    validation_error = {'error': 'Validation error'}
-    not_found_error = {'error': 'Item not found'}
-    permission_classes = (IsOwnerOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly, )
+
+    def get_serializer(self, *args, **kwargs):
+        serializer = super().get_serializer(*args, **kwargs)
+
+        if self.request.method == "PATCH":
+            serializer.fields['category'].read_only = True
+        return serializer
 
     def get_object_or_error(self, *args, **kwargs):
         pk = kwargs.get('pk')
@@ -141,12 +170,10 @@ class IdeaDetailAPIView(APIView):
         except ValidationError:
             return Response(self.validation_error, status=400)
 
-        serializer = self.serializer_class(idea, context={
-            'request': request
-        })
+        serializer = self.get_serializer(idea)
         return Response(serializer.data)
 
-    def put(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         try:
             idea = self.get_object_or_error(*args, **kwargs)
         except ValueError:
@@ -154,16 +181,19 @@ class IdeaDetailAPIView(APIView):
         except ValidationError:
             return Response(self.validation_error, status=400)
 
+        self.check_object_permissions(request, idea)
+
         new_idea = request.data
         tags = new_idea.pop("tags", [])
-        serializer = self.serializer_class(data=new_idea, instance=idea, context={
-            'request': request
-        })
+        serializer = self.get_serializer(
+            data=new_idea, instance=idea, partial=True)
         if not serializer.is_valid():
             return Response(self.validation_error, status=400)
 
         if tags:
             tags = self.get_tags(tags)
+            if isinstance(tags, Response):
+                return tags
             serializer.save(tags=tags)
         else:
             serializer.save()
@@ -177,6 +207,7 @@ class IdeaDetailAPIView(APIView):
             return Response(self.not_found_error, status=404)
         except ValidationError:
             return Response(self.validation_error, status=400)
+        self.check_object_permissions(request, idea)
 
         idea.delete()
         return Response()
@@ -191,27 +222,21 @@ class IdeaDetailAPIView(APIView):
         return tags
 
 
-class CommentAPIView(APIView):
+class CommentAPIView(APIView, ErrorsMixin, SerializerMixin):
     model = Comment
     serializer_class = CommentSerializer
-    validation_error = {'error': 'Validation error'}
-    not_found_error = {'error': 'Item not found'}
     permission_classes = (IsAuthenticatedOrReadOnly,)
     pagination_class = CommentPagination
 
     def filter_queryset(self, **filters):
         queryset = self.model.objects.all()
 
-        new_or_popular = filters.get('ordering', 'new')
-        if new_or_popular == 'new':
-            queryset = queryset.order_by('-date_added')
-        elif new_or_popular == 'popular':
+        idea_id = filters.get("pk")
+        queryset = queryset.filter(idea_id=idea_id)
+
+        sort_by = filters.get('ordering', 'date')
+        if sort_by == 'likes':
             queryset = queryset.order_by('-likes')
-            time_delta = filters.get('time_delta')
-            if time_delta is not None:
-                now = datetime.datetime.now()
-                lower_date = now - datetime.timedelta(days=time_delta)
-                queryset = queryset.filter(date__range=[lower_date, now])
 
         return queryset
 
@@ -220,8 +245,16 @@ class CommentAPIView(APIView):
         try:
             Idea.objects.get(id=idea_id)
         except ValidationError:
+            validation_error = self.validation_error
+            validation_error['fields'] = [
+                {"idea_pk": "Needs to be uuid"}
+            ]
             return Response(self.validation_error, status=400)
         except ObjectDoesNotExist:
+            not_found_error = self.not_found_error
+            not_found_error['fields'] = [
+                {"idea_pk": "No idea with that uuid"}
+            ]
             return Response(self.not_found_error, status=404)
 
         filters = {**request.query_params, **kwargs}
@@ -230,10 +263,11 @@ class CommentAPIView(APIView):
         except ValidationError:
             return Response(self.validation_error, status=400)
 
-        serializer = self.serializer_class(queryset, many=True, context={
-            'request': request
-        })
-        return Response(serializer.data)
+        paginator = self.pagination_class()
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+
+        serializer = self.get_serializer(paginated_queryset, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         idea_id = kwargs.get("pk")
@@ -241,16 +275,22 @@ class CommentAPIView(APIView):
         try:
             Idea.objects.get(id=idea_id)
         except ValidationError:
+            validation_error = self.validation_error
+            validation_error['fields'] = [
+                {"idea_pk": "Needs to be uuid"}
+            ]
             return Response(self.validation_error, status=400)
         except ObjectDoesNotExist:
+            not_found_error = self.not_found_error
+            not_found_error['fields'] = [
+                {"idea_pk": "No idea with that uuid"}
+            ]
             return Response(self.not_found_error, status=404)
 
         comment = request.data
         comment['idea_id'] = idea_id
 
-        serializer = self.serializer_class(data=comment, context={
-            'request': request
-        })
+        serializer = self.get_serializer(data=comment)
         if not serializer.is_valid():
             return Response(self.validation_error, status=400)
         serializer.save(owner=request.user)
@@ -258,13 +298,17 @@ class CommentAPIView(APIView):
         return Response(serializer.data)
 
 
-class CommentDetailAPIView(APIView):
+class CommentDetailAPIView(APIView, ErrorsMixin, SerializerMixin):
 
     model = Comment
     serializer_class = CommentSerializer
-    validation_error = {'error': 'Validation error'}
-    not_found_error = {'error': 'Item not found'}
-    permission_classes = (IsOwnerOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
+
+    def get_serializer(self, *args, **kwargs):
+        serializer = super().get_serializer(*args, **kwargs)
+        if self.request.method == 'PATCH':
+            serializer.fields['idea_id'].read_only = True
+        return serializer
 
     def get_object_or_error(self, *args, **kwargs):
         pk = kwargs.get('comment_pk')
@@ -283,12 +327,11 @@ class CommentDetailAPIView(APIView):
         except ObjectDoesNotExist:
             return Response(self.not_found_error, status=404)
 
+        self.check_object_permissions(request, comment)
         new_comment = request.data
 
-        serializer = self.serializer_class(
-            data=new_comment, instance=comment, partial=True, context={
-                'request': request
-            })
+        serializer = self.get_serializer(
+            data=new_comment, instance=comment, partial=True)
         if not serializer.is_valid():
             return Response(self.validation_error, status=400)
         serializer.save()
@@ -302,16 +345,15 @@ class CommentDetailAPIView(APIView):
             return Response(self.validation_error, status=400)
         except ObjectDoesNotExist:
             return Response(self.not_found_error, status=404)
+        self.check_object_permissions(request, comment)
 
         comment.delete()
         return Response()
 
 
-class LikeAPIView(APIView):
+class LikeAPIView(APIView, ErrorsMixin, SerializerMixin):
     model = Like
     serializer_class = LikeSerializer
-    validation_error = {'error': 'Validation error'}
-    not_found_error = {'error': 'Item not found'}
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def validate_publication_id(self, publication_id):
@@ -319,13 +361,13 @@ class LikeAPIView(APIView):
         comment = Comment.objects.filter(id=publication_id).first()
 
         if not (idea or comment):
-            raise ObjectDoesNotExist
+            return ObjectDoesNotExist
+
+        return idea or comment
 
     def get(self, request, *args, **kwargs):
         queryset = self.model.objects.all()
-        serializer = self.serializer_class(queryset, many=True, context={
-            'request': request
-        })
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
@@ -333,7 +375,7 @@ class LikeAPIView(APIView):
         publication_id = kwargs.get("pk")
 
         try:
-            self.validate_publication_id(publication_id)
+            publication = self.validate_publication_id(publication_id)
         except ValidationError:
             return Response(self.validation_error, status=400)
         except ObjectDoesNotExist:
@@ -343,32 +385,52 @@ class LikeAPIView(APIView):
             return Response()
 
         new_like['publication_id'] = publication_id
-        serializer = self.serializer_class(data=new_like, context={
-            'request': request
-        })
+        serializer = self.get_serializer(data=new_like)
         if not serializer.is_valid():
             return Response(self.validation_error, status=400)
+
+        publication.likes = publication.likes + 1
+        publication.save()
 
         serializer.save(owner=request.user)
         return Response(serializer.data)
 
-    def delete(self, request, *args, **kwargs):
-        publication_id = kwargs.get("pk")
 
+class LikeDetailAPIView(APIView, ErrorsMixin, SerializerMixin):
+    model = Like
+    serializer_class = LikeSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
+
+    def get_object_or_error(self, *args, **kwargs):
+        pk = kwargs.get('pk')
+        like = self.model.objects.filter(id=pk).first()
+
+        if not like:
+            raise ValueError
+
+        return like
+
+    def delete(self, request, *args, **kwargs):
         try:
-            self.validate_publication_id(publication_id)
+            like = self.get_object_or_error(*args, **kwargs)
+        except ValueError:
+            return Response(self.not_found_error, status=404)
         except ValidationError:
             return Response(self.validation_error, status=400)
-        except ObjectDoesNotExist:
-            return Response(self.not_found_error, status=404)
 
-        if not user_liked(request.user, publication_id):
-            return Response()
-
-        like = self.model.objects.filter(
-            publication_id=publication_id, owner=request.user).first()
+        publication = self.get_publication(like.publication_id)
         like.delete()
+
+        publication.likes = publication.likes - 1
+        publication.save()
+
         return Response()
+
+    def get_publication(self, publication_id):
+        idea = Idea.objects.filter(id=publication_id).first()
+        comment = Comment.objects.filter(id=publication_id).first()
+
+        return idea or comment
 
 
 def user_liked(user, publication_id):

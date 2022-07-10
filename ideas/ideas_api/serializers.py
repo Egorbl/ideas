@@ -1,10 +1,10 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from authentication.serializers import AccountSerializer
 from .models import (
     Tag, Idea, Comment, Like,
 )
-from .relations import TagRelatedField
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -19,20 +19,24 @@ class TagSerializer(serializers.ModelSerializer):
 class IdeaSerializer(serializers.ModelSerializer):
 
     owner = AccountSerializer(read_only=True)
-    likes = serializers.ReadOnlyField()
     tags = TagSerializer(many=True, read_only=True)
+    likes = serializers.ReadOnlyField()
 
     is_liked = serializers.SerializerMethodField(
         read_only=True, method_name='get_is_liked')
 
     class Meta:
         model = Idea
+        # required: id, category, title, content. Optional: tags
         fields = (
             'id', 'owner', 'category', 'title', 'content', 'date_added',
             'date_updated', 'tags', 'likes', 'is_actual', 'is_liked',
         )
 
     def get_is_liked(self, obj):
+        if not self.context['request'].user.is_authenticated:
+            return False
+
         idea_id = obj.id
         like = Like.objects.filter(
             owner=self.context['request'].user,
@@ -55,10 +59,13 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = (
-            'id', 'idea_id', 'owner', 'content', 'date_added', 'is_updated', 'likes', 'is_liked',
+            'id', 'idea_id', 'content', 'date_added', 'is_liked', 'is_updated', 'likes', 'owner',
         )
 
     def get_is_liked(self, obj):
+        if not self.context['request'].user.is_authenticated:
+            return False
+
         comment_id = obj.id
         like = Like.objects.filter(
             owner=self.context['request'].user,
