@@ -38,12 +38,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # external applications
+
     'rest_framework',
     'rest_framework.authtoken',
     'drf_yasg',
+    'channels',
+
+    # internal applications
 
     'ideas_api',
     'authentication',
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -75,6 +81,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'ideas.wsgi.application'
+ASGI_APPLICATION = 'ideas.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 
 # Database
