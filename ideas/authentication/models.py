@@ -1,10 +1,14 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from rest_framework.authtoken.models import Token
 
 
-def get_current_user(request):
-    pass
+def get_profile_image_filepath(self):
+    return f'profile_images/{self.id}/profile_image.png'
+
+
+def get_default_profile_image():
+    return "images/base_image.png"
 
 
 class AccountManager(BaseUserManager):
@@ -26,9 +30,9 @@ class AccountManager(BaseUserManager):
     def create_superuser(self, email, username, password):
         user = self.create_user(
             email=self.normalize_email(email),
-            username=username,
-            password=password
+            username=username
         )
+        user.set_password(password)
         user.is_admin = True
         user.is_staff = True
         user.is_superuser = True
@@ -46,14 +50,17 @@ class Account(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    hide_email = models.BooleanField(default=True)
+    profile_image = models.ImageField(
+        max_length=255, null=True, blank=True, default=get_default_profile_image, upload_to=get_profile_image_filepath)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ['username']
 
     objects = AccountManager()
 
-    def str(self):
-        return self.email
+    def __str__(self):
+        return self.username
 
     def has_perm(self, perm, obj=None):
         return self.is_admin
