@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from rest_framework.authtoken.models import Token
 
 
-def get_profile_image_filepath(self):
+def get_profile_image_filepath(self, filename):
     return f'profile_images/{self.id}/profile_image.png'
 
 
