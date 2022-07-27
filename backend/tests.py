@@ -3,8 +3,8 @@ import requests
 
 BASE_URL = "http://localhost:8000/api/"
 
-token_user = '6c02fcb3ee90fb7cdc6b62489b2038907e3d5f2f'
-token_admin = '16141661ccac74a5d4e0fdff389ef0f9f8dfd8fe'
+token_user = 'bbfe008d4257d2668930ba46770d6e64b0ce1e1c'
+token_admin = 'e932784a582376c9fbef04c26dd8e3e2b9749213'
 invalid_token = '123'
 nonexistant_token = '8d03d68a7c54c45290a7f8838236a8282061f25a'
 
@@ -671,7 +671,7 @@ delete_like_400 = [
     },
     # 3. User is not owner
     {
-        'token': token_admin,
+        'token': token_user,
         'id_path': '00000001-e80b-12d3-a300-426614174000',
     },
     # 4. No like with that uuid
