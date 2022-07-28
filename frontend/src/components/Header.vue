@@ -15,12 +15,9 @@ export default {
 
         isUserAuthenticated() {
             const accessToken = localStorage.getItem("accessToken");
-            console.log("checking authentication");
             if (accessToken == null) {
-                console.log("not authenticated");
                 return true;
             }
-            console.log("authenticated");
             return false;
         }
     }
@@ -35,7 +32,7 @@ export default {
             <router-link to="register">Register</router-link>
         </span>
         <span v-else>
-            <router-link to="logout">Logout</router-link> |
+            <router-link to="/logout">Logout</router-link> |
             <span>Hello, {{ getUserName() }}</span>
         </span>
     </nav>

@@ -35,16 +35,20 @@ class IdeaSerializer(serializers.ModelSerializer):
     is_liked = serializers.SerializerMethodField(
         read_only=True, method_name='get_is_liked')
 
+    is_owner = serializers.SerializerMethodField(
+        read_only=True, method_name='get_is_owner')
+
     class Meta:
         model = Idea
         # required: id, category, title, content. Optional: tags
         fields = (
             'id', 'owner', 'category', 'title', 'content', 'date_added',
-            'date_updated', 'tags', 'likes', 'is_actual', 'is_liked',
+            'date_updated', 'tags', 'likes', 'is_actual', 'is_liked', 'is_owner',
         )
 
     def get_is_liked(self, obj):
         if not self.context['request'].user.is_authenticated:
+            print(self.context['request'])
             return False
 
         idea_id = obj.id
@@ -54,6 +58,13 @@ class IdeaSerializer(serializers.ModelSerializer):
         ).first()
 
         return True if like else False
+
+    def get_is_owner(self, obj):
+        if not self.context['request'].user.is_authenticated:
+            return False
+
+        idea_owner = obj.owner
+        return True if idea_owner == self.context['request'].user else False
 
 
 class CommentSerializer(serializers.ModelSerializer):

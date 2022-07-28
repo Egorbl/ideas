@@ -13,7 +13,6 @@ export default {
     mounted() {
         this.observer = new IntersectionObserver(([entry]) => {
             if (entry && entry.isIntersecting) {
-                console.log(entry)
                 this.$emit('intersect');
             }
         })

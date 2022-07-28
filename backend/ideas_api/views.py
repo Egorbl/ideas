@@ -214,18 +214,25 @@ class IdeaDetailAPIView(APIView, ErrorsMixin, SerializerMixin):
 
         new_idea = request.data
         tags = new_idea.pop("tags", [])
+        category_id = new_idea.pop("category", None)
+        if category_id == None:
+            return Response(self.validation_error, status=400)
+
         serializer = self.get_serializer(
             data=new_idea, instance=idea, partial=True)
         if not serializer.is_valid():
             return Response(self.validation_error, status=400)
 
+        category = self.get_category(category_id)
+        print(category)
+
         if tags:
             tags = self.get_tags(tags)
             if isinstance(tags, Response):
                 return tags
-            serializer.save(tags=tags)
+            serializer.save(tags=tags, category=category)
         else:
-            serializer.save()
+            serializer.save(category=category)
 
         return Response(serializer.data)
 
@@ -249,6 +256,10 @@ class IdeaDetailAPIView(APIView, ErrorsMixin, SerializerMixin):
                 return Response(self.validation_error)
             tags.append(tag)
         return tags
+
+    def get_category(self, category_id):
+        category = Category.objects.filter(id=category_id).first()
+        return category
 
 
 class CommentAPIView(APIView, ErrorsMixin, SerializerMixin):
@@ -410,7 +421,9 @@ class LikeAPIView(APIView, ErrorsMixin, SerializerMixin):
         except ObjectDoesNotExist:
             return Response(self.not_found_error, status=404)
 
-        if user_liked(request.user, publication_id):
+        like = user_liked(request.user, publication_id)
+        if like:
+            like.delete()
             return Response()
 
         new_like['publication_id'] = publication_id
@@ -425,45 +438,8 @@ class LikeAPIView(APIView, ErrorsMixin, SerializerMixin):
         return Response(serializer.data)
 
 
-class LikeDetailAPIView(APIView, ErrorsMixin, SerializerMixin):
-    model = Like
-    serializer_class = LikeSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
-
-    def get_object_or_error(self, *args, **kwargs):
-        pk = kwargs.get('pk')
-        like = self.model.objects.filter(id=pk).first()
-
-        if not like:
-            raise ValueError
-
-        return like
-
-    def delete(self, request, *args, **kwargs):
-        try:
-            like = self.get_object_or_error(*args, **kwargs)
-        except ValueError:
-            return Response(self.not_found_error, status=404)
-        except ValidationError:
-            return Response(self.validation_error, status=400)
-
-        publication = self.get_publication(like.publication_id)
-        like.delete()
-
-        publication.likes = publication.likes - 1
-        publication.save()
-
-        return Response()
-
-    def get_publication(self, publication_id):
-        idea = Idea.objects.filter(id=publication_id).first()
-        comment = Comment.objects.filter(id=publication_id).first()
-
-        return idea or comment
-
-
 def user_liked(user, publication_id):
     query = Like.objects.filter(
         owner=user, publication_id=publication_id).first()
 
-    return True if query else False
+    return query

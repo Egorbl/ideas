@@ -39,6 +39,11 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "login" */ '../views/IdeaFormView.vue')
   },
+  {
+    path: '/ideaForm/:ideaId',
+    name: 'ideaFormUpdating',
+    component: () => import('../views/IdeaFormView.vue')
+  }
 ]
 
 const router = createRouter({

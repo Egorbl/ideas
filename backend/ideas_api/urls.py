@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     IdeaAPIView, TagAPIView, IdeaDetailAPIView,
-    CommentAPIView, CommentDetailAPIView, LikeAPIView, LikeDetailAPIView, CategoryAPIView
+    CommentAPIView, CommentDetailAPIView, LikeAPIView, CategoryAPIView
 )
 
 app_name = 'ideas_api'
@@ -14,6 +14,5 @@ urlpatterns = [
     path('ideas/<str:pk>/comments/', CommentAPIView.as_view()),  # GET
     path('comments/<str:comment_pk>/',
          CommentDetailAPIView.as_view()),  # GET
-    path('publication/<str:pk>/likes/', LikeAPIView.as_view()),  # GET
-    path('likes/<str:pk>/', LikeDetailAPIView.as_view()),
+    path('likes/<str:pk>/', LikeAPIView.as_view()),  # GET
 ]
