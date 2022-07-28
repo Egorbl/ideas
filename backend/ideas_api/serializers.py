@@ -3,7 +3,7 @@ from rest_framework.exceptions import ValidationError
 
 from authentication.serializers import AccountSerializer
 from .models import (
-    Tag, Idea, Comment, Like,
+    Tag, Idea, Comment, Like, Category,
 )
 
 
@@ -16,11 +16,21 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ('id', 'name',)
 
 
+class CategorySerializer(serializers.ModelSerializer):
+
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Category
+        fields = ('id', 'name',)
+
+
 class IdeaSerializer(serializers.ModelSerializer):
 
     owner = AccountSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     likes = serializers.ReadOnlyField()
+    category = CategorySerializer(read_only=True)
 
     is_liked = serializers.SerializerMethodField(
         read_only=True, method_name='get_is_liked')

@@ -1,13 +1,14 @@
 from django.urls import path
 from .views import (
     IdeaAPIView, TagAPIView, IdeaDetailAPIView,
-    CommentAPIView, CommentDetailAPIView, LikeAPIView, LikeDetailAPIView
+    CommentAPIView, CommentDetailAPIView, LikeAPIView, LikeDetailAPIView, CategoryAPIView
 )
 
 app_name = 'ideas_api'
 
 urlpatterns = [
     path('tags/', TagAPIView.as_view()),  # GET
+    path('categories/', CategoryAPIView.as_view()),
     path('ideas/', IdeaAPIView.as_view()),  # GET
     path('ideas/<str:pk>/', IdeaDetailAPIView.as_view()),  # GET
     path('ideas/<str:pk>/comments/', CommentAPIView.as_view()),  # GET

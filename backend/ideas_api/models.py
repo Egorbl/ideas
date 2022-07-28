@@ -7,11 +7,13 @@ from authentication.models import Account
 programming = "programming"
 art = "art"
 science = "science"
+other = "other"
 
 IDEA_CATEGORY_CHOICES = (
     (programming, "Programming"),
     (art, "Art"),
     (science, "Science"),
+    (other, "Other")
 )
 
 
@@ -23,11 +25,19 @@ class Tag(models.Model):
         return self.name
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=60, unique=True, db_index=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Idea(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid4())
     owner = models.ForeignKey(
         to=Account, related_name="ideas", on_delete=models.CASCADE)
-    category = models.CharField(max_length=60, choices=IDEA_CATEGORY_CHOICES)
+    category = models.ForeignKey(
+        to=Category, related_name="ideas", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     content = models.TextField(max_length=10000)
     date_added = models.DateTimeField(auto_now_add=True, db_index=True)

@@ -21,7 +21,9 @@ export default {
         password: this.password
       }).then((response) => {
         const accessToken = response.data.token;
+        const username = response.data.username;
         localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("username", username)
         console.log("login success");
         location.reload();
       }).catch(() => {

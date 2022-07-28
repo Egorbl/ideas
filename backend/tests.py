@@ -3,8 +3,8 @@ import requests
 
 BASE_URL = "http://localhost:8000/api/"
 
-token_user = 'bbfe008d4257d2668930ba46770d6e64b0ce1e1c'
-token_admin = 'e932784a582376c9fbef04c26dd8e3e2b9749213'
+token_user = 'dfa55f42fc3060eb2550fa01bdc4b0da10c4fa4d'
+token_admin = '9fb9adc141973cba03ec071f61c63cd8849553c9'
 invalid_token = '123'
 nonexistant_token = '8d03d68a7c54c45290a7f8838236a8282061f25a'
 
@@ -217,6 +217,33 @@ tags_400 = [
     }
 ]
 
+categories_200 = [
+    # {
+    #     'token': token_admin,
+    #     'data': {
+    #         'name': 'Programming'
+    #     }
+    # },
+    {
+        'token': token_admin,
+        'data': {
+            'name': 'Art'
+        }
+    },
+    {
+        'token': token_admin,
+        'data': {
+            'name': 'Science'
+        }
+    },
+    {
+        'token': token_admin,
+        'data': {
+            'name': 'Others'
+        }
+    },
+]
+
 # tag: None, only_my: None, category: None, new_or_popular: 'new', only_actual: True
 # required: id, category, title, content. Optional: tags
 ideas_post_200 = [
@@ -225,7 +252,7 @@ ideas_post_200 = [
         'token': token_user,
         'data': {
             'id': '00000001-e80b-12d3-a456-426614174000',
-            'category': 'programming',
+            'category': 1,
             'title': 'Site1',
             'content': 'Making site 1',
             'tags': [1, 2]
@@ -236,7 +263,7 @@ ideas_post_200 = [
         'token': token_admin,
         'data': {
             'id': '00000002-e80b-12d3-a456-426614174000',
-            'category': 'programming',
+            'category': 1,
             'title': 'Site2',
             'content': 'Making site 2',
             'tags': [1, 2, 3]
@@ -247,7 +274,7 @@ ideas_post_200 = [
         'token': token_user,
         'data': {
             'id': '00000003-e80b-12d3-a456-426614174000',
-            'category': 'science',
+            'category': 3,
             'title': 'Site3',
             'content': 'Making site 3'
         }
@@ -257,7 +284,7 @@ ideas_post_200 = [
         'token': token_user,
         'data': {
             'id': '00000004-e80b-12d3-a456-426614174000',
-            'category': 'science',
+            'category': 3,
             'title': 'Site3',
             'content': 'Making another site 3',
             'tags': [4, 5]
@@ -268,7 +295,7 @@ ideas_post_200 = [
         'token': token_user,
         'data': {
             'id': '00000005-e80b-12d3-a456-426614174000',
-            'category': 'art',
+            'category': 2,
             'title': 'Art 1',
             'content': 'Art 1',
             'tags': [4, 5, 6]
@@ -291,7 +318,7 @@ ideas_post_400 = [
         'token': token_user,
         'data': {
             'id': '00000006-e80b-12d3-a456-426614174000',
-            'category': 'art',
+            'category': 2,
             'content': 'Art 2',
             'tags': [4, 5, 6]
         }
@@ -301,7 +328,7 @@ ideas_post_400 = [
         'token': token_user,
         'data': {
             'id': '00000006-e80b-12d3-a456-426614174000',
-            'category': 'art',
+            'category': 2,
             'title': 'Art 2',
             'tags': [4, 5, 6]
         }
@@ -311,7 +338,7 @@ ideas_post_400 = [
         'token': token_user,
         'data': {
             'id': '00000006-e80b-12d3-a456-426614174000',
-            'category': 'art',
+            'category': 2,
             'title': 'Art 2',
             'content': 'Art 2',
             'tags': [4, 5, 6, 22]
@@ -321,7 +348,7 @@ ideas_post_400 = [
     {
         'data': {
             'id': '00000006-e80b-12d3-a456-426614174000',
-            'category': 'art',
+            'category': 2,
             'title': 'Art 2',
             'content': 'Art 2',
             'tags': [4, 5, 6]
@@ -332,7 +359,7 @@ ideas_post_400 = [
         'token': invalid_token,
         'data': {
             'id': '00000006-e80b-12d3-a456-426614174000',
-            'category': 'art',
+            'category': 2,
             'title': 'Art 2',
             'content': 'Art 2',
             'tags': [4, 5, 6]
@@ -343,7 +370,7 @@ ideas_post_400 = [
         'token': token_user,
         'data': {
             'id': '00000001-e80b-12d3-a456-426614174000',
-            'category': 'art',
+            'category': 2,
             'title': 'Art 2',
             'content': 'Art 2',
             'tags': [4, 5, 6]
@@ -742,65 +769,68 @@ def test_url(
 
 
 def main():
-    # test_url('register/', 'post', [200], 'Register 200',
-    #          data=register_200, error_message='Expected status 200')
+    #     test_url('register/', 'post', [200], 'Register 200',
+    #              data=register_200, error_message='Expected status 200')
 
-    # test_url('register/', 'post', [400], 'Register 400',
-    #          data=register_400, error_message='Expected status 400')
+    test_url('register/', 'post', [400], 'Register 400',
+             data=register_400, error_message='Expected status 400')
 
-    # test_url('login/', 'post', [200], 'Login 200', data=login_200,
-    #          error_message="Expected status 200")
+    test_url('login/', 'post', [200], 'Login 200', data=login_200,
+             error_message="Expected status 200")
 
-    # test_url('login/', 'post', [400], 'Login 400', data=login_400,
-    #          error_message='Expected status 400')
+    test_url('login/', 'post', [400], 'Login 400', data=login_400,
+             error_message='Expected status 400')
 
-    # test_url('tags/', 'post', [200], 'Tag post 200',
-    #          data=tags_200, error_message="Expected status 200")
+    test_url('tags/', 'post', [200], 'Tag post 200',
+             data=tags_200, error_message="Expected status 200")
 
-    # test_url('tags/', 'post', [400, 401, 403], 'Tag post 400',
-    #          data=tags_400, error_message="Expected status 400, 401 or 403")
+    test_url('categories/', 'post', [200], 'Category post 200',
+             data=categories_200, error_message="Expected status 200")
 
-    # test_url('ideas/', 'post', [200], 'Ideas post 200',
-    #          ideas_post_200, error_message='Expected status 200')
+    test_url('tags/', 'post', [400, 401, 403], 'Tag post 400',
+             data=tags_400, error_message="Expected status 400, 401 or 403")
 
-    # test_url('ideas/', 'post', [400, 401], 'Idea post 400',
-    #          data=ideas_post_400, error_message="Expected status 400 or 401")
+    test_url('ideas/', 'post', [200], 'Ideas post 200',
+             ideas_post_200, error_message='Expected status 200')
 
-    # test_url('ideas/', 'post', [200], 'Comments post 200', data=comment_post_200, error_message="Expected status 200",
-    #          second_part_path='/comments/')
+    test_url('ideas/', 'post', [400, 401], 'Idea post 400',
+             data=ideas_post_400, error_message="Expected status 400 or 401")
 
-    # test_url('ideas/', 'post', [400, 401, 404], 'Comments post 400',
-    #          data=comments_post_400, error_message="Expected status 400, 401, 404", second_part_path='/comments/')
+    test_url('ideas/', 'post', [200], 'Comments post 200', data=comment_post_200, error_message="Expected status 200",
+             second_part_path='/comments/')
 
-    # test_url('publication/', 'post', [200], 'Likes post 200', data=likes_post_200,
-    #          error_message='Expected status 200', second_part_path='/likes/')
+    test_url('ideas/', 'post', [400, 401, 404], 'Comments post 400',
+             data=comments_post_400, error_message="Expected status 400, 401, 404", second_part_path='/comments/')
 
-    # test_url('ideas/', 'patch', [200], 'Ideas updating 200', data=ideas_patch_200,
-    #          error_message='Expected response 200', second_part_path='/')
+    test_url('publication/', 'post', [200], 'Likes post 200', data=likes_post_200,
+             error_message='Expected status 200', second_part_path='/likes/')
 
-    # test_url('ideas/', 'patch', [400, 401, 403, 404], 'Ideas updating 400', data=ideas_patch_400,
-    #          error_message='Expected response 400, 401, 403 or 404', second_part_path='/')
+    test_url('ideas/', 'patch', [200], 'Ideas updating 200', data=ideas_patch_200,
+             error_message='Expected response 200', second_part_path='/')
 
-    # test_url('comments/', 'patch', [200], 'Comments updating 200',
-    #          data=comments_patch_200, error_message='Expected status 200', second_part_path='/')
+    test_url('ideas/', 'patch', [400, 401, 403, 404], 'Ideas updating 400', data=ideas_patch_400,
+             error_message='Expected response 400, 401, 403 or 404', second_part_path='/')
 
-    # test_url('comments/', 'patch', [400, 401, 403, 404], 'Comments updating 400',
-    #          data=comments_patch_400, error_message='Expected status 400', second_part_path='/')
+    test_url('comments/', 'patch', [200], 'Comments updating 200',
+             data=comments_patch_200, error_message='Expected status 200', second_part_path='/')
 
-    # test_url('ideas/', 'delete', [200], 'Idea delete 200', data=delete_idea_200,
-    #          error_message='Expected status 200', second_part_path='/')
+    test_url('comments/', 'patch', [400, 401, 403, 404], 'Comments updating 400',
+             data=comments_patch_400, error_message='Expected status 400', second_part_path='/')
 
-    # test_url('ideas/', 'delete', [400, 401, 403, 404], 'Idea delete 400', data=delete_idea_400,
-    #          error_message='Expected status 400', second_part_path='/')
+    test_url('ideas/', 'delete', [200], 'Idea delete 200', data=delete_idea_200,
+             error_message='Expected status 200', second_part_path='/')
 
-    # test_url('comments/', 'delete', [200], 'Comment delete 200', data=delete_comment_200,
-    #          error_message='Expected status 200', second_part_path='/')
+    test_url('ideas/', 'delete', [400, 401, 403, 404], 'Idea delete 400', data=delete_idea_400,
+             error_message='Expected status 400', second_part_path='/')
 
-    # test_url('comments/', 'delete', [400, 401, 403, 404], 'Comment delete 400', data=delete_comment_400,
-    #          error_message='Expected status 400', second_part_path='/')
+    test_url('comments/', 'delete', [200], 'Comment delete 200', data=delete_comment_200,
+             error_message='Expected status 200', second_part_path='/')
 
-    # test_url('likes/', 'delete', [200], 'Like delete 200', data=delete_like_200,
-    #          error_message='Expected status 200', second_part_path='/')
+    test_url('comments/', 'delete', [400, 401, 403, 404], 'Comment delete 400', data=delete_comment_400,
+             error_message='Expected status 400', second_part_path='/')
+
+    test_url('likes/', 'delete', [200], 'Like delete 200', data=delete_like_200,
+             error_message='Expected status 200', second_part_path='/')
 
     test_url('likes/', 'delete', [400, 401, 403, 404], 'Like delete 400', data=delete_like_400,
              error_message='Expected status 400', second_part_path='/')

@@ -7,10 +7,10 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 import datetime
 
 from .models import (
-    Idea, Tag, Comment, Like
+    Idea, Tag, Comment, Like, Category
 )
 from .serializers import (
-    IdeaSerializer, TagSerializer, CommentSerializer, LikeSerializer
+    IdeaSerializer, TagSerializer, CommentSerializer, LikeSerializer, CategorySerializer
 )
 from .permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 from .pagination import IdeaPagination, CommentPagination, TagPagination
@@ -97,11 +97,17 @@ class IdeaAPIView(APIView, ErrorsMixin, SerializerMixin):
         if isinstance(tags, Response):
             return tags
 
+        category_id = idea.pop('category', None)
+        category = self.get_category(category_id)
+
+        if not category:
+            return Response(self.validation_error, status=400)
+
         serializer = self.get_serializer(data=idea)
         if not serializer.is_valid():
             self.validation_error['fields'] = serializer.errors
             return Response(self.validation_error, status=400)
-        serializer.save(owner=request.user, tags=tags)
+        serializer.save(owner=request.user, tags=tags, category=category)
         return Response(serializer.data)
 
     def get_tags(self, tags_id):
@@ -113,22 +119,45 @@ class IdeaAPIView(APIView, ErrorsMixin, SerializerMixin):
             tags.append(tag)
         return tags
 
+    def get_category(self, category_id):
+        category = Category.objects.filter(id=category_id).first()
+        return category
+
 
 class TagAPIView(APIView, ErrorsMixin, SerializerMixin):
 
     model = Tag
     serializer_class = TagSerializer
     permission_classes = (IsAdminOrReadOnly,)
-    pagination_class = TagPagination
 
     def get(self, request):
         queryset = self.model.objects.all()
 
-        paginator = self.pagination_class()
-        paginated_queryset = paginator.paginate_queryset(queryset, request)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
-        serializer = self.get_serializer(paginated_queryset, many=True)
-        return paginator.get_paginated_response(serializer.data)
+    def post(self, request):
+
+        tag = request.data
+        serializer = self.get_serializer(data=tag)
+        if not serializer.is_valid():
+            return Response(self.validation_error, status=400)
+
+        serializer.save()
+        return Response(serializer.data)
+
+
+class CategoryAPIView(APIView, ErrorsMixin, SerializerMixin):
+
+    model = Category
+    serializer_class = CategorySerializer
+    permission_classes = (IsAdminOrReadOnly,)
+
+    def get(self, request):
+        queryset = self.model.objects.all()
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
 

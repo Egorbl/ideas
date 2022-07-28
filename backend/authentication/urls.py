@@ -3,12 +3,12 @@ from rest_framework.authtoken.views import (
     obtain_auth_token,
 )
 from .views import (
-    registration_view,
+    registration_view, CustomObtainToken
 )
 
 app_name = 'authentication'
 
 urlpatterns = [
-    path('login/', obtain_auth_token),
+    path('login/', CustomObtainToken.as_view()),
     path('register/', registration_view),
 ]
