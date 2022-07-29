@@ -1,10 +1,14 @@
 <script>
+import axios from "axios";
+
 export default {
     name: "app-header",
 
     data() {
         return {
             username: "",
+            categoriesUrl: "http://localhost:8000/api/categories/",
+            categories: [],
         }
     },
 
@@ -16,24 +20,93 @@ export default {
         isUserAuthenticated() {
             const accessToken = localStorage.getItem("accessToken");
             if (accessToken == null) {
-                return true;
+                return false;
             }
-            return false;
+            return true;
+        },
+
+        async uploadCategories() {
+            await axios.get(this.categoriesUrl)
+                .then((response) => {
+                    const categories = response.data
+                    this.categories = categories;
+                })
+
+        },
+
+        signOut() {
+            localStorage.removeItem("accessToken");
+            location.reload();
+        },
+        addIdea() {
+            if (this.isUserAuthenticated()) {
+                this.$router.push("ideaForm");
+                return
+            }
+            this.$router.push("login");
+        },
+        getIdeasOnCategory(categoryId) {
+            this.$router.push({
+                name: "category",
+                params: {
+                    category: categoryId
+                }
+            })
         }
+    },
+
+    mounted() {
+        this.uploadCategories();
     }
 }
 </script>
 
 <template>
-    <nav>
-        <router-link to="/">Home</router-link> |
-        <span v-if="isUserAuthenticated()">
-            <router-link to="/login">Login</router-link> |
-            <router-link to="register">Register</router-link>
-        </span>
-        <span v-else>
-            <router-link to="/logout">Logout</router-link> |
-            <span>Hello, {{ getUserName() }}</span>
-        </span>
-    </nav>
+    <header class="p-3 border-bottom mb-3">
+        <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                    <li>
+                        <router-link to="/" class="nav-link px-2 link-secondary">Home
+                        </router-link>
+                    </li>
+                    <li v-for="category in categories" :key="category.id">
+                        <a href="#" @click="getIdeasOnCategory(category.id)" class="nav-link px-2 link-dark">{{
+                                category.name
+                        }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link px-2 link-success" @click="addIdea">Suggest idea</a>
+                    </li>
+                </ul>
+
+                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
+                    <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+                </form>
+
+                <div v-if="isUserAuthenticated()" class="dropdown text-end">
+                    <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                    </a>
+                    <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a href="#" class="dropdown-item" @click="signOut">Sign out</a>
+                        </li>
+                    </ul>
+                </div>
+                <div v-else class="text-end">
+                    <button type="button" class="btn btn-light me-2" @click="this.$router.push('login')">Login</button>
+                    <button type="button" class="btn btn-warning"
+                        @click="this.$router.push('register')">Sign-up</button>
+                </div>
+            </div>
+        </div>
+    </header>
 </template>

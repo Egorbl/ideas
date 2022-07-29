@@ -20,18 +20,16 @@ export default {
                 password: "",
                 password2: "",
             },
-            success: false,
         }
     },
 
     methods: {
         async registerUser() {
-            console.log("registrating");
             await axios.post(this.registerUrl, this.inputs)
                 .then((response) => {
                     if (response.status == 200) {
                         this.validationError = false;
-                        this.success = true;
+                        this.$router.push('login');
                     }
                 })
                 .catch((error) => {
@@ -62,14 +60,6 @@ export default {
                     Some of your inputs are invalid. Please, try again.
                 </div>
             </div>
-            <div v-if="success" class="alert alert-success d-flex align-items-center" role="alert">
-                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
-                    <use xlink:href="#check-circle-fill" />
-                </svg>
-                <div>
-                    You have successfully registered
-                </div>
-            </div>
             <div class="mb-3">
                 <label class="form-label">Username</label>
                 <input v-model="inputs.username" class="form-control errorOccured" :placeholder="errors.username">
@@ -90,7 +80,7 @@ export default {
                 <input v-model="inputs.password2" type="password" class="form-control errorOccured"
                     :placeholder="errors.password2">
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-warning">Submit</button>
         </form>
     </div>
 </template>

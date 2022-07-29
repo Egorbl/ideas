@@ -58,9 +58,10 @@ class IdeaAPIView(APIView, ErrorsMixin, SerializerMixin):
         if only_my is not None and user.is_authenticated:
             queryset = queryset.filter(owner=user)
 
-        category = filters.get('category')
-        if category is not None:
-            queryset = queryset.filter(category=category[0])
+        category_id = filters.get('category')
+        if category_id is not None:
+            category = Category.objects.filter(id=category_id[0]).first()
+            queryset = queryset.filter(category=category)
 
         only_actual = filters.get("only_actual", 'true')
         if only_actual[0] == 'true':
@@ -422,7 +423,10 @@ class LikeAPIView(APIView, ErrorsMixin, SerializerMixin):
             return Response(self.not_found_error, status=404)
 
         like = user_liked(request.user, publication_id)
+
         if like:
+            publication.likes = publication.likes - 1
+            publication.save()
             like.delete()
             return Response()
 

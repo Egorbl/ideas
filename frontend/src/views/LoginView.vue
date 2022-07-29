@@ -62,7 +62,7 @@ export default {
         <label for="exampleInputPassword1" class="form-label">Password</label>
         <input v-model="password" type="password" class="form-control" id="exampleInputPassword1">
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="submit" class="btn btn-warning">Submit</button>
     </form>
   </div>
 </template>

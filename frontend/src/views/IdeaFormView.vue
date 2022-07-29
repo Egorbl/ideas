@@ -168,10 +168,6 @@ export default {
 </script>
 
 <template>
-    <p>______________________________________</p>
-    <p>Please, tell about your idea</p>
-    {{ this.$route.params }}
-    <p>______________________________________</p>
 
     <div class="login d-flex justify-content-center " @submit.prevent="pushIdea">
         <form class="col-md-6">

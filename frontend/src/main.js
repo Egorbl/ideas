@@ -7,11 +7,11 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap/dist/js/bootstrap.bundle"
 
 import { library } from "@fortawesome/fontawesome-svg-core"
-import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons"
+import { faHeart as faHeartSolid, faHouse } from "@fortawesome/free-solid-svg-icons"
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 
-library.add(faHeartSolid, faHeartRegular);
+library.add(faHeartSolid, faHeartRegular, faHouse);
 
 createApp(App)
     .component('fa', FontAwesomeIcon)
