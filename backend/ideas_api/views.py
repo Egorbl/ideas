@@ -278,6 +278,8 @@ class CommentAPIView(APIView, ErrorsMixin, SerializerMixin):
         sort_by = filters.get('ordering', 'date')
         if sort_by == 'likes':
             queryset = queryset.order_by('-likes')
+        else:
+            queryset = queryset.order_by('-date_added')
 
         return queryset
 

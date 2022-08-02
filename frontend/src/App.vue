@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main-app">
     <Header />
     <router-view />
   </div>
@@ -37,3 +37,14 @@ nav a.router-link-exact-active {
   color: #42b983;
 }
 </style> -->
+
+<style>
+.main-app {
+  word-wrap: break-word;
+}
+
+.my-card {
+  border: 1px solid rgba(100, 100, 100, 0.7);
+  background-color: rgba(218, 196, 196, 0.2)
+}
+</style>

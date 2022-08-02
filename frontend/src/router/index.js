@@ -40,6 +40,11 @@ const routes = [
     path: '/ideaForm/:ideaId',
     name: 'ideaFormUpdating',
     component: () => import('../views/IdeaFormView.vue')
+  },
+  {
+    path: '/idea/:ideaId',
+    name: 'idea',
+    component: () => import('../views/IdeaView.vue')
   }
 ]
 
