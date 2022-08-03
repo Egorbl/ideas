@@ -22,12 +22,14 @@ export default {
       }).then((response) => {
         const accessToken = response.data.token;
         const username = response.data.username;
+        const accountId = response.data.id;
+        const imagePath = response.data.image;
         localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("username", username)
-        console.log("login success");
+        localStorage.setItem("username", username);
+        localStorage.setItem("accountId", accountId);
+        localStorage.setItem("imagePath", imagePath);
         location.reload();
       }).catch(() => {
-        console.log("login error");
         this.validationError = true;
         this.password = "";
       })

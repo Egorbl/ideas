@@ -8,6 +8,7 @@ export default {
         return {
             username: "",
             categoriesUrl: "http://localhost:8000/api/categories/",
+            mediaUrl: "http://localhost:8000/media/",
             categories: [],
         }
     },
@@ -16,7 +17,9 @@ export default {
         getUserName() {
             return localStorage.getItem("username");
         },
-
+        getImagePath() {
+            return this.mediaUrl + localStorage.getItem("imagePath");
+        },
         isUserAuthenticated() {
             const accessToken = localStorage.getItem("accessToken");
             if (accessToken == null) {
@@ -52,6 +55,10 @@ export default {
                     category: categoryId
                 }
             })
+        },
+        goToProfile() {
+            const username = localStorage.getItem("username");
+            this.$router.push(`/profile/${username}`);
         }
     },
 
@@ -88,10 +95,11 @@ export default {
                 <div v-if="isUserAuthenticated()" class="dropdown text-end">
                     <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1"
                         data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                        <img :src="getImagePath()" alt="mdo" width="32" height="32" class="rounded-circle">
                     </a>
                     <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><a class="dropdown-item" href="#" @click.prevent="goToProfile">Profile</a>
+                        </li>
                         <li><a class="dropdown-item" href="#">Settings</a></li>
                         <li>
                             <hr class="dropdown-divider">

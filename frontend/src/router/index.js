@@ -45,6 +45,11 @@ const routes = [
     path: '/idea/:ideaId',
     name: 'idea',
     component: () => import('../views/IdeaView.vue')
+  },
+  {
+    path: '/profile/:username',
+    name: 'profile',
+    component: () => import('../views/ProfileView.vue')
   }
 ]
 

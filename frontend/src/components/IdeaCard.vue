@@ -10,11 +10,16 @@ export default {
         return {
             ideasUrl: "http://localhost:8000/api/ideas/",
             likesUrl: "http://localhost:8000/api/likes/",
+            baseUrl: "http://localhost:8000/media/",
+            imagePath: "http://localhost:8000/media/images/dummy_image.png"
         }
     },
     methods: {
         getStandardDate(date) {
             return date;
+        },
+        getImagePath() {
+            return this.imagePath;
         },
         async postLike(idea) {
             const accessToken = localStorage.getItem("accessToken");
@@ -69,6 +74,12 @@ export default {
                 (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
             );
         },
+        async uploadImagePath() {
+            this.imagePath = this.idea.owner.profile_image;
+        }
+    },
+    mounted() {
+        this.uploadImagePath();
     }
 }
 </script>
@@ -78,7 +89,7 @@ export default {
         <div class="">
             <div class="d-flex flex-row mb-3">
                 <div>
-                    <img src="https://github.com/mdo.png" alt="mdo" width="50" height="50" class="rounded-circle">
+                    <img :src="getImagePath()" alt="mdo" width="50" height="50" class="rounded-circle">
                 </div>
                 <h5 class="mt-3 px-3 fs-6">{{ idea.owner.username }}</h5>
                 <h5 class="mt-3 px-3 fs-6 ms-auto text-secondary">Added: {{ getStandardDate(idea.date_added) }}</h5>

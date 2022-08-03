@@ -14,6 +14,7 @@ export default {
             },
             registerUrl: "http://localhost:8000/api/register/",
             validationError: false,
+            image: undefined,
             errors: {
                 email: "",
                 username: "",
@@ -25,7 +26,18 @@ export default {
 
     methods: {
         async registerUser() {
-            await axios.post(this.registerUrl, this.inputs)
+            let formData = new FormData();
+            if (this.image) {
+                formData.append("profile_image", this.image);
+            }
+            for (let key in this.inputs) {
+                formData.append(key, this.inputs[key]);
+            }
+            await axios.post(this.registerUrl, formData, {
+                headers: {
+                    "content-type": "multipart/form-data"
+                }
+            })
                 .then((response) => {
                     if (response.status == 200) {
                         this.validationError = false;
@@ -33,6 +45,7 @@ export default {
                     }
                 })
                 .catch((error) => {
+                    console.log(error);
                     const errorData = error.response.data;
 
                     for (const [key, value] of Object.entries(errorData)) {
@@ -43,6 +56,9 @@ export default {
                     this.inputs.password2 = "";
                     this.validationError = true;
                 })
+        },
+        changeImage(file) {
+            this.image = file;
         }
     },
 
@@ -80,7 +96,12 @@ export default {
                 <input v-model="inputs.password2" type="password" class="form-control errorOccured"
                     :placeholder="errors.password2">
             </div>
-            <button type="submit" class="btn btn-warning">Submit</button>
+            <form class="mb-3">
+                <div class="form-group">
+                    <input type="file" class="form-control-file" @change="changeImage($event.target.files[0])">
+                </div>
+            </form>
+            <button type=" submit" class="btn btn-warning">Submit</button>
         </form>
     </div>
 </template>

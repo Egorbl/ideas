@@ -1,10 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 
-def get_profile_image_filepath(self):
-    return f'profile_images/{self.id}/profile_image.png'
+def get_profile_image_filepath(self, name):
+    return f'profile_images/{self.username}/profile_image.png'
 
 
 def get_default_profile_image():
@@ -12,7 +11,7 @@ def get_default_profile_image():
 
 
 class AccountManager(BaseUserManager):
-    def create_user(self, email, username, password=None):
+    def create_user(self, email, username, password):
         if not email:
             raise ValueError("Users must have an email adress")
         if not username:
@@ -30,9 +29,9 @@ class AccountManager(BaseUserManager):
     def create_superuser(self, email, username, password):
         user = self.create_user(
             email=self.normalize_email(email),
-            username=username
+            username=username,
+            password=password
         )
-        user.set_password(password)
         user.is_admin = True
         user.is_staff = True
         user.is_superuser = True
