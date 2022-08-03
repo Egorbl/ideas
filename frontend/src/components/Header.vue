@@ -8,7 +8,7 @@ export default {
         return {
             username: "",
             categoriesUrl: "http://localhost:8000/api/categories/",
-            mediaUrl: "http://localhost:8000/media/",
+            mediaUrl: "http://localhost:8000",
             categories: [],
         }
     },
@@ -18,7 +18,7 @@ export default {
             return localStorage.getItem("username");
         },
         getImagePath() {
-            return this.mediaUrl + localStorage.getItem("imagePath");
+            return this.mediaUrl + localStorage.getItem("image");
         },
         isUserAuthenticated() {
             const accessToken = localStorage.getItem("accessToken");
@@ -59,6 +59,9 @@ export default {
         goToProfile() {
             const username = localStorage.getItem("username");
             this.$router.push(`/profile/${username}`);
+        },
+        goLogin() {
+            this.$router.push('/login');
         }
     },
 
@@ -110,9 +113,9 @@ export default {
                     </ul>
                 </div>
                 <div v-else class="text-end">
-                    <button type="button" class="btn btn-light me-2" @click="this.$router.push('login')">Login</button>
+                    <button type="button" class="btn btn-light me-2" @click="goLogin">Login</button>
                     <button type="button" class="btn btn-warning"
-                        @click="this.$router.push('register')">Sign-up</button>
+                        @click="this.$router.push('/register')">Sign-up</button>
                 </div>
             </div>
         </div>

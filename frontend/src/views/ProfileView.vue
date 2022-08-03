@@ -8,7 +8,7 @@ export default {
             username: undefined,
             userUrl: "http://localhost:8000/api/users/",
             baseUrl: "http://localhost:8000",
-            userData: undefined,
+            userData: {},
             userImage: "/media/images/dummy_image.png"
         }
     },
@@ -29,6 +29,9 @@ export default {
                     this.userImage = this.userData.profile_image;
                 })
         },
+        getStandardDate(date) {
+            return date;
+        }
     },
     async mounted() {
         this.username = this.$route.params.username;
@@ -43,10 +46,22 @@ export default {
 </script>
 
 <template>
-    <p>{{ userData }}</p>
+    <!-- <p>{{ userData }}</p> -->
 
-    <div>
-
+    <div class="d-flex flex-column align-items-center">
+        <img :src="fullImageUrl" alt="mdo" width="300" height="300" class="rounded-circle mb-3">
+        <p class="mb-3">Username: {{ userData.username }}</p>
+        <span>
+            <p v-if="userData.hide_email && !userData.is_owner">Email: ****</p>
+            <p v-else>Email: {{ userData.email }}</p>
+        </span>
+        <p>Date joined: {{ getStandardDate(userData.date_joined) }}</p>
+        <p>Last login: {{ getStandardDate(userData.last_login) }}</p>
+        <div v-if="userData.is_owner" class="d-flex flex-row">
+            <button type="button" class="btn btn-success mx-1" @click="this.$router.push('/updateProfile')">Change
+                profile data</button>
+            <button type="button" class="btn btn-warning">Change password</button>
+        </div>
     </div>
 
 </template>

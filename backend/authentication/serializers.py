@@ -11,7 +11,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ['email', 'username', 'password',
+        fields = ['id', 'email', 'username', 'password',
                   'password2', 'profile_image', ]
         extra_kwargs = {
             'password': {'write_only': True},
@@ -19,6 +19,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     def save(self):
         account = Account(
+            id=self.validated_data['id'],
             email=self.validated_data["email"],
             username=self.validated_data["username"],
         )
@@ -30,6 +31,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
                 {'password': 'Password must match'})
 
         profile_image = self.validated_data.get("profile_image")
+        print(profile_image)
         if profile_image:
             account.profile_image = profile_image
 
@@ -43,5 +45,9 @@ class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = (
-            'email', 'username', 'date_joined', 'last_login', 'profile_image',
+            'id', 'email', 'username', 'date_joined', 'last_login', 'profile_image', 'hide_email',
         )
+
+    # def save(self):
+    #     # print(self.instance)
+    #     return self.instance

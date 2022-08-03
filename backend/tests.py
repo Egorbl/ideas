@@ -3,14 +3,15 @@ import requests
 
 BASE_URL = "http://localhost:8000/api/"
 
-token_user = 'dfa55f42fc3060eb2550fa01bdc4b0da10c4fa4d'
-token_admin = '9fb9adc141973cba03ec071f61c63cd8849553c9'
+token_user = 'fc78ca660d0956e3ba9fdb1bc26c32858036516d'
+token_admin = '0ef914cbd0698c55b8bf10bbca9bbab94d695be2'
 invalid_token = '123'
 nonexistant_token = '8d03d68a7c54c45290a7f8838236a8282061f25a'
 
 register_200 = [
     {
         'data': {
+            'id': '123e4567-e89b-12d3-a456-426614174009',
             'email': 'user_1@mail.ru',
             'username': 'user_1',
             'password': '1234567',
@@ -23,6 +24,7 @@ register_400 = [
     # 1. no_email
     {
         'data': {
+            'id': '00000002-e80b-12b3-a456-426614174000',
             'username': 'user_2',
             'password': '1234567',
             'password2': '1234567'
@@ -31,6 +33,7 @@ register_400 = [
     # 2. no_username
     {
         'data': {
+            'id': '00000002-e80b-12b3-a456-426614174000',
             'email': 'user_2@mail.ru',
             'password': '1234567',
             'password2': '1234567'
@@ -39,6 +42,7 @@ register_400 = [
     # 3. no_password1
     {
         'data': {
+            'id': '00000002-e80b-12b3-a456-426614174000',
             'email': 'user_2@mail.ru',
             'username': 'user_2',
             'password2': '1234567'
@@ -47,6 +51,7 @@ register_400 = [
     # 4. no_password2
     {
         'data': {
+            'id': '00000002-e80b-12b3-a456-426614174000',
             'email': 'user_2@mail.ru',
             'username': 'user_2',
             'password': '1234567'
@@ -55,6 +60,7 @@ register_400 = [
     # 5. invalid email
     {
         'data': {
+            'id': '00000002-e80b-12b3-a456-426614174000',
             'email': 'user_2@mail',
             'username': 'user_2',
             'password': '1234567',
@@ -64,6 +70,7 @@ register_400 = [
     # 6. password1 != password2
     {
         'data': {
+            'id': '00000002-e80b-12b3-a456-426614174000',
             'email': 'user_2@mail.ru',
             'username': 'user_2',
             'password': '1234567',
@@ -73,6 +80,7 @@ register_400 = [
     # 7. User is already exists
     {
         'data': {
+            'id': '00000002-e80b-12b3-a456-426614174000',
             'email': 'user_3@mail.ru',
             'username': 'user_1',
             'password': '1234567',
@@ -82,6 +90,7 @@ register_400 = [
     # 8. Email is already related to user
     {
         'data': {
+            'id': '00000002-e80b-12b3-a456-426614174000',
             'email': 'user_1@mail.ru',
             'username': 'user_3',
             'password': '1234567',
@@ -218,12 +227,12 @@ tags_400 = [
 ]
 
 categories_200 = [
-    # {
-    #     'token': token_admin,
-    #     'data': {
-    #         'name': 'Programming'
-    #     }
-    # },
+    {
+        'token': token_admin,
+        'data': {
+            'name': 'Programming'
+        }
+    },
     {
         'token': token_admin,
         'data': {
@@ -769,8 +778,8 @@ def test_url(
 
 
 def main():
-    #     test_url('register/', 'post', [200], 'Register 200',
-    #              data=register_200, error_message='Expected status 200')
+    test_url('register/', 'post', [200], 'Register 200',
+             data=register_200, error_message='Expected status 200')
 
     test_url('register/', 'post', [400], 'Register 400',
              data=register_400, error_message='Expected status 400')
@@ -827,12 +836,6 @@ def main():
              error_message='Expected status 200', second_part_path='/')
 
     test_url('comments/', 'delete', [400, 401, 403, 404], 'Comment delete 400', data=delete_comment_400,
-             error_message='Expected status 400', second_part_path='/')
-
-    test_url('likes/', 'delete', [200], 'Like delete 200', data=delete_like_200,
-             error_message='Expected status 200', second_part_path='/')
-
-    test_url('likes/', 'delete', [400, 401, 403, 404], 'Like delete 400', data=delete_like_400,
              error_message='Expected status 400', second_part_path='/')
 
 

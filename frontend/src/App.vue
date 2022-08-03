@@ -1,7 +1,7 @@
 <template>
   <div class="main-app">
-    <Header />
-    <router-view />
+    <Header :num="num" />
+    <router-view @changeHeader="changeNum" />
   </div>
 </template>
 
@@ -11,6 +11,16 @@ import Header from "./components/Header.vue"
 export default {
   components: {
     Header,
+  },
+  data() {
+    return {
+      num: 12
+    }
+  },
+  methods: {
+    changeNum() {
+      this.num += 1;
+    }
   }
 }
 </script>

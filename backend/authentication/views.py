@@ -37,8 +37,10 @@ class CustomObtainToken(ObtainAuthToken):
         response_data = response.data
         current_user = Token.objects.get(key=response_data['token']).user
         response_data['username'] = current_user.username
-        response_data['id'] = current_user.id
-        response_data['image'] = str(current_user.profile_image)
+        response_data['accountId'] = current_user.id
+        response_data['image'] = current_user.profile_image.url
+        response_data['email'] = current_user.email
+        response_data['accessToken'] = response_data.pop("token")
         return Response(response_data)
 
 
@@ -59,3 +61,26 @@ def user_view(request, *args, **kwargs):
     serialized_user = AccountSerializer(user).data
     serialized_user['is_owner'] = (request.user == user)
     return Response(serialized_user)
+
+
+@api_view(['PATCH'])
+def user_update_view(request, *args, **kwargs):
+    data = dict(request.data)
+
+    for key in data.keys():
+        data[key] = data[key][0]
+
+    account_id = kwargs.get("id")
+    account = Account.objects.filter(id=account_id).first()
+
+    if not account.check_password(data.pop("password")):
+        return Response({'password': "Password is not valid"}, status=400)
+    serializer = AccountSerializer(instance=account, data=data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    response_data = {
+        "username": serializer.instance.username,
+        "email": serializer.instance.email,
+        "image": serializer.instance.profile_image.url
+    }
+    return Response(response_data)

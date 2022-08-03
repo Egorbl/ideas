@@ -20,14 +20,9 @@ export default {
         username: this.email,
         password: this.password
       }).then((response) => {
-        const accessToken = response.data.token;
-        const username = response.data.username;
-        const accountId = response.data.id;
-        const imagePath = response.data.image;
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("username", username);
-        localStorage.setItem("accountId", accountId);
-        localStorage.setItem("imagePath", imagePath);
+        for (const [key, value] of Object.entries(response.data)) {
+          localStorage.setItem(key, value);
+        }
         location.reload();
       }).catch(() => {
         this.validationError = true;
@@ -40,7 +35,7 @@ export default {
     }
   },
 
-  created() {
+  mounted() {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
       this.$router.push("/");

@@ -1,9 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from uuid import uuid4
 
 
 def get_profile_image_filepath(self, name):
-    return f'profile_images/{self.username}/profile_image.png'
+    return f'profile_images/{self.id}/profile_image.png'
 
 
 def get_default_profile_image():
@@ -41,6 +42,7 @@ class AccountManager(BaseUserManager):
 
 
 class Account(AbstractBaseUser):
+    id = models.UUIDField(primary_key=True, unique=True)
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)
     username = models.CharField(max_length=60, unique=True)
     date_joined = models.DateTimeField(auto_now_add=True)
