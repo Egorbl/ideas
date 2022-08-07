@@ -60,7 +60,8 @@ export default {
         <div v-if="userData.is_owner" class="d-flex flex-row">
             <button type="button" class="btn btn-success mx-1" @click="this.$router.push('/updateProfile')">Change
                 profile data</button>
-            <button type="button" class="btn btn-warning">Change password</button>
+            <button type="button" class="btn btn-warning" @click="this.$router.push('/changePassword')">Change
+                password</button>
         </div>
     </div>
 

@@ -76,6 +76,9 @@ export default {
         },
         async uploadImagePath() {
             this.imagePath = this.idea.owner.profile_image;
+        },
+        getProfileLink() {
+            return `/profile/${this.idea.owner.username}`;
         }
     },
     mounted() {
@@ -88,12 +91,14 @@ export default {
     <div class="mb-4 p-5 pt-4 col-md-8 col-sm-10 bg-light card">
         <div class="">
             <div class="d-flex flex-row mb-3">
-                <div>
-                    <img :src="getImagePath()" alt="mdo" width="50" height="50" class="rounded-circle">
-                </div>
-                <h5 class="mt-3 px-3 fs-6">{{ idea.owner.username }}</h5>
+                <router-link :to="getProfileLink()" class="d-flex flex-row text-dark">
+                    <div>
+                        <img :src="getImagePath()" alt="mdo" width="50" height="50" class="rounded-circle">
+                    </div>
+                    <h5 class="mt-3 px-3 fs-6">{{ idea.owner.username }}</h5>
+                </router-link>
                 <h5 class="mt-3 px-3 fs-6 ms-auto text-secondary">Added: {{ getStandardDate(idea.date_added) }}</h5>
-                <div class="ms-auto d-flex flex-row">
+                <div class="ms-auto d-flex flex-row" v-if="idea.is_owner">
                     <div class="m-2">
                         <fa icon="fa-solid fa-pen" class="fa-lg fa-clickable" @click="updateIdea(idea)"></fa>
                     </div>

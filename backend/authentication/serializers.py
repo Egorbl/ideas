@@ -31,7 +31,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
                 {'password': 'Password must match'})
 
         profile_image = self.validated_data.get("profile_image")
-        print(profile_image)
         if profile_image:
             account.profile_image = profile_image
 

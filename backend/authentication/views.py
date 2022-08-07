@@ -84,3 +84,25 @@ def user_update_view(request, *args, **kwargs):
         "image": serializer.instance.profile_image.url
     }
     return Response(response_data)
+
+
+@api_view(['PATCH', ])
+def change_password_view(request, *args, **kwargs):
+    account_id = kwargs.get("id")
+    account = Account.objects.filter(id=account_id).first()
+
+    if not account.check_password(request.data.get("oldPassword")):
+        return Response({'oldPassword': "Old password is not valid"}, status=400)
+
+    new_password = request.data.get("newPassword")
+    new_password_2 = request.data.get("newPassword2")
+
+    if not new_password:
+        return Response({"newPassword": "New password cannot be null"}, status=400)
+
+    if not (new_password == new_password_2):
+        return Response({"newPassword": "Passwords must match."}, status=400)
+
+    account.set_password(new_password)
+    account.save()
+    return Response()

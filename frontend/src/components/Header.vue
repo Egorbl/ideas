@@ -43,7 +43,7 @@ export default {
         },
         addIdea() {
             if (this.isUserAuthenticated()) {
-                this.$router.push("ideaForm");
+                this.$router.push("/ideaForm");
                 return
             }
             this.$router.push("login");
