@@ -89,11 +89,13 @@ export default {
                     <li>
                         <a href="#" class="nav-link px-2 link-success" @click="addIdea">Suggest idea</a>
                     </li>
+                    <button type="button" class="btn btn-outline-primary mx-1"
+                        @click="this.$router.push('/chat')">Chat</button>
                 </ul>
 
-                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
+                <!-- <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
                     <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
-                </form>
+                </form> -->
 
                 <div v-if="isUserAuthenticated()" class="dropdown text-end">
                     <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1"

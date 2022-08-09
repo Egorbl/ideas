@@ -1,10 +1,10 @@
 from django.urls import path
 
-from .views import main_chat_page, room_page
-
-app_name = 'chat'
+from .views import (
+    ChatAPIView, MessagesAPIView,
+)
 
 urlpatterns = [
-    path('', main_chat_page),
-    path('<str:room_name>', room_page),
+    path("chats/", ChatAPIView.as_view()),  # GET, POST
+    path("chats/<str:pk>/messages/", MessagesAPIView.as_view()),   # GET, POST
 ]

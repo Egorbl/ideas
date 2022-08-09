@@ -25,7 +25,8 @@ urlpatterns = [
 
     path('api/', include('ideas_api.urls')),
     path('api/', include('authentication.urls')),
-    path('chat/', include('chat.urls')),
+    path('api/', include('chat.urls'))
+
 ]
 
 
