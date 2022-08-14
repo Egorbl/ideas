@@ -72,7 +72,7 @@ class MessagesAPIView(GenericAPIView, APIView):
             data[key] = value
         data["chat"] = chat_id
 
-        serializer = self.get_serializer(data=data)
+        serializer = self.get_serializer(data=data, *args, **kwargs)
         serializer.is_valid(raise_exception=True)
         serializer.save(owner=request.user)
         return Response(serializer.data)

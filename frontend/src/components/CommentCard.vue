@@ -92,7 +92,7 @@ export default {
 
 <template>
     <div class="d-flex flex-row px-5 py-3 bg-light">
-        <img src="https://github.com/mdo.png" alt="mdo" width="30" height="30" class="rounded-circle">
+        <img :src="comment.owner.profile_image" alt="mdo" width="30" height="30" class="rounded-circle">
         <div class="mx-3 mt-1 d-flex flex-column col-md-10">
             <p>{{ comment.owner.username }}</p>
 
@@ -107,12 +107,12 @@ export default {
                 <p>{{ comment.content }}</p>
             </div>
         </div>
-        <div class="d-flex justify-content-between flex-column">
+        <div class="d-flex flex-column justify-content-between">
             <div class="d-flex flex-row mt-1" v-if="comment.is_owner">
                 <fa icon="fa-solid fa-pen" class="fa-clickable m-1" @click="startUpdate"></fa>
                 <fa icon="fa-solid fa-trash" class="faClickable m-1" @click="deleteComment(comment)"></fa>
             </div>
-            <div class="ms-auto d-flex flex-row">
+            <div class="d-flex flex-row">
                 <span @click="postLike(comment)">
                     <fa v-if="comment.is_liked" icon="fa-solid fa-heart" class="fa-clickable mt-2"></fa>
                     <fa v-else icon="fa-regular fa-heart" class="fa-clickable mt-2"></fa>
