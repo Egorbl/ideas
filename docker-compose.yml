@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=idea_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=efomef62
+  backend:
+    container_name: back_ideas
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+    restart: unless-stopped
+    environment:
+      - POSTGRES_NAME=idea_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=efomef62
+    volumes:
+      - ./backend:/my_proj
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+  frontend:
+    container_name: front_ideas
+    build:
+      context: .
+      dockerfile: ./compose/front/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./frontend:/vue_proj
+    ports:
+      - "8080:8080"

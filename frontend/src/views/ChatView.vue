@@ -215,7 +215,7 @@ export default {
             </div>
             <button type="button" class="btn btn-success" @click="createChat">Create</button>
         </div>
-        <div class="d-flex flex-row col-12 col-md-10">
+        <div class="d-flex flex-row col-12 col-md-10 card">
             <div class="d-flex flex-column col-5 scrollingDiv fullSize p-4">
                 <div v-for="chat in chats" :key="chat.id" class="clickable card m-1" @click="changeChat(chat.id)">
                     <div class="m-1">

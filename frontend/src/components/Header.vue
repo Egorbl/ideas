@@ -87,7 +87,7 @@ export default {
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link px-2 link-success" @click="addIdea">Suggest idea</a>
+                        <a href="#" class="nav-link px-2 link-success" @click.prevent="addIdea">Suggest idea</a>
                     </li>
                     <button type="button" class="btn btn-outline-primary mx-1"
                         @click="this.$router.push('/chat')">Chat</button>
