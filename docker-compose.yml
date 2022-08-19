@@ -24,8 +24,12 @@ services:
       - ./backend:/my_proj
     ports:
       - "8000:8000"
+      - "8001:8001"
     depends_on:
       - db
+  redis:
+    container_name: back_redis
+    image: redis
 #  frontend:
 #    container_name: front_ideas
 #    build:
