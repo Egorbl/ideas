@@ -42,7 +42,7 @@ class AccountManager(BaseUserManager):
 
 
 class Account(AbstractBaseUser):
-    id = models.UUIDField(primary_key=True, unique=True)
+    id = models.UUIDField(primary_key=True, unique=True, default=uuid4)
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)
     username = models.CharField(max_length=60, unique=True)
     date_joined = models.DateTimeField(auto_now_add=True)
