@@ -8,9 +8,9 @@ export default {
         return {
             categories: [],
             tags: [],
-            tagsUrl: "http://localhost:8000/api/tags/",
-            categoriesUrl: "http://localhost:8000/api/categories/",
-            ideasUrl: "http://localhost:8000/api/ideas/",
+            tagsUrl: "http://sshishigin.space:8765/api/tags/",
+            categoriesUrl: "http://sshishigin.space:8765/api/categories/",
+            ideasUrl: "http://sshishigin.space:8765/api/ideas/",
             errors: {
                 "title": "",
                 "content": "",

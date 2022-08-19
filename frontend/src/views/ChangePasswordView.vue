@@ -6,7 +6,7 @@ export default {
     emits: ["changeHeader"],
     data() {
         return {
-            changePasswordUrl: "http://localhost:8000/api/change_password/",
+            changePasswordUrl: "http://sshishigin.space:8765/api/change_password/",
             validationError: false,
             inputs: {
                 oldPassword: "",

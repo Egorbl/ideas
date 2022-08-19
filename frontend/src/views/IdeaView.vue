@@ -13,7 +13,7 @@ export default {
     },
     data() {
         return {
-            ideaUrl: "http://localhost:8000/api/ideas/",
+            ideaUrl: "http://sshishigin.space:8765/api/ideas/",
             comments: [],
             idea: undefined,
             page_size: 2,
