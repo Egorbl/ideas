@@ -8,10 +8,10 @@ export default {
     },
     data() {
         return {
-            ideasUrl: "http://localhost:8000/api/ideas/",
-            likesUrl: "http://localhost:8000/api/likes/",
-            baseUrl: "http://localhost:8000/media/",
-            imagePath: "http://localhost:8000/media/images/dummy_image.png"
+            ideasUrl: "http://sshishigin.space:8765/api/ideas/",
+            likesUrl: "http://sshishigin.space:8765/api/likes/",
+            baseUrl: "http://sshishigin.space:8765/media/",
+            imagePath: "http://sshishigin.space:8765/media/images/dummy_image.png"
         }
     },
     methods: {

@@ -12,8 +12,8 @@ export default {
     ],
     data() {
         return {
-            commentsUrl: "http://localhost:8000/api/comments/",
-            likesUrl: "http://localhost:8000/api/likes/",
+            commentsUrl: "http://sshishigin.space:8765/api/comments/",
+            likesUrl: "http://sshishigin.space:8765/api/likes/",
             updating: false,
             commentText: "",
         }

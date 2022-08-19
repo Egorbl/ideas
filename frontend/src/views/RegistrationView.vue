@@ -12,7 +12,7 @@ export default {
                 password: "",
                 password2: "",
             },
-            registerUrl: "http://localhost:8000/api/register/",
+            registerUrl: "http://sshishigin.space:8765/api/register/",
             validationError: false,
             image: undefined,
             errors: {
