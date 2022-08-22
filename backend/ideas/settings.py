@@ -67,6 +67,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'ideas.urls'
 
+CSRF_TRUSTED_ORIGINS = ['http://sshishigin.space']
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
