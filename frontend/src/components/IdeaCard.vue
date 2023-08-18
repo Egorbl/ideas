@@ -8,10 +8,10 @@ export default {
     },
     data() {
         return {
-            ideasUrl: "http://sshishigin.space:8765/api/ideas/",
-            likesUrl: "http://sshishigin.space:8765/api/likes/",
-            baseUrl: "http://sshishigin.space:8765/media/",
-            imagePath: "http://sshishigin.space:8765/media/images/dummy_image.png"
+            ideasUrl: "http://5.9.178.136:8765/api/ideas/",
+            likesUrl: "http://5.9.178.136:8765/api/likes/",
+            baseUrl: "http://5.9.178.136:8765/media/",
+            imagePath: "http://5.9.178.136:8765/media/images/dummy_image.png"
         }
     },
     methods: {

@@ -6,8 +6,8 @@ export default {
     data() {
         return {
             username: undefined,
-            userUrl: "http://sshishigin.space:8765/api/users/",
-            baseUrl: "http://sshishigin.space:8765",
+            userUrl: "http://5.9.178.136:8765/api/users/",
+            baseUrl: "http://5.9.178.136:8765",
             userData: {},
             userImage: "/media/images/dummy_image.png"
         }

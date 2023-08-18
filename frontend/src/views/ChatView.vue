@@ -5,10 +5,10 @@ export default {
     name: "app-chat-view",
     data() {
         return {
-            baseUrl: "http://sshishigin.space:8765",
-            chatsUrl: "http://sshishigin.space:8765/api/chats/",
-            usersUrl: "http://sshishigin.space:8765/api/users/",
-            chatWsUrl: "ws://sshishigin.space:8765/ws/chat/",
+            baseUrl: "http://5.9.178.136:8765",
+            chatsUrl: "http://5.9.178.136:8765/api/chats/",
+            usersUrl: "http://5.9.178.136:8765/api/users/",
+            chatWsUrl: "ws://5.9.178.136:8765/ws/chat/",
             chats: [],
             creatingChat: false,
             users: [],

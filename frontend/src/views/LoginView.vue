@@ -8,7 +8,7 @@ export default {
     return {
       email: "",
       password: "",
-      loginUrl: "http://sshishigin.space:8765/api/login/",
+      loginUrl: "http://5.9.178.136:8765/api/login/",
       validationError: false,
     }
   },

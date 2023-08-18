@@ -6,7 +6,7 @@ export default {
     emits: ["changeHeader"],
     data() {
         return {
-            updateUrl: "http://sshishigin.space:8765/api/update_user/",
+            updateUrl: "http://5.9.178.136:8765/api/update_user/",
             profileData: {
                 password: "",
             },

@@ -7,8 +7,8 @@ export default {
     data() {
         return {
             username: "",
-            categoriesUrl: "http://sshishigin.space:8765/api/categories/",
-            mediaUrl: "http://sshishigin.space:8765",
+            categoriesUrl: "http://5.9.178.136:8765/api/categories/",
+            mediaUrl: "http://5.9.178.136:8765",
             categories: [],
         }
     },

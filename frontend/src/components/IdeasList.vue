@@ -28,8 +28,8 @@ export default {
             ideas: [],
             currentPage: 1,
             lastPage: undefined,
-            ideasUrl: "http://sshishigin.space:8765/api/ideas/",
-            likesUrl: "http://sshishigin.space:8765/api/likes/",
+            ideasUrl: "http://5.9.178.136:8765/api/ideas/",
+            likesUrl: "http://5.9.178.136:8765/api/likes/",
             pageSize: 4,
         }
     },
